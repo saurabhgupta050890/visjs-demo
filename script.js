@@ -56,6 +56,9 @@ let options = {
         font: {
             color: "#FFF",
         },
+        shadow: {
+            color: "#FFF",
+        },
     },
     edges: {
         smooth: {
