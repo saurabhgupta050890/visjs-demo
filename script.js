@@ -39,6 +39,7 @@ let edges = new vis.DataSet([
 let defaultFocusNodeId = 1;
 
 const container = document.getElementById("network");
+const url = "https://7ru4yz3cg0.execute-api.us-east-1.amazonaws.com/dev/project/list";
 
 let data = {
     nodes: nodes,
@@ -67,7 +68,7 @@ let options = {
     },
     physics: {
         barnesHut: {
-            gravitationalConstant: -3000,
+            gravitationalConstant: -30000,
             springLength: 120,
             avoidOverlap: 1,
         }
@@ -110,3 +111,12 @@ const fitAminate = () => network.fit({
         easingFunction: 'easeInOutQuad',
     },
 });
+
+fetch(url)
+    .then(res => res.json())
+    .then(data => {
+        console.log(JSON.parse(data));
+        if (data.status === 200) {
+            console.log(JSON.parse(data.body));
+        }
+    });
