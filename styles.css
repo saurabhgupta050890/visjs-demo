@@ -3,9 +3,16 @@
     height: 700px;
     border: 1px solid lightgray;
     grid-column-start: 1;
-    background: #724DDA;
+    background: linear-gradient(262deg, #724dda, #ac9ae1);
+    background-size: 400% 400%;
+    animation: gradientMoving 17s ease infinite;
 }
 
+@keyframes gradientMoving { 
+    0%{background-position:0% 47%}
+    50%{background-position:100% 54%}
+    100%{background-position:0% 47%}
+}
 .sidebar {
     grid-column-start: 2;
     margin: 15px
