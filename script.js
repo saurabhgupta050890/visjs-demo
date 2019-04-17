@@ -1,6 +1,6 @@
 // Load data from server
 
-let nodes = new vis.DataSet([
+/* let nodes = new vis.DataSet([
     { id: 1, label: "Javascript", },
     { id: 2, label: "Project 1", },
     { id: 3, label: "Project 2", },
@@ -17,9 +17,9 @@ let nodes = new vis.DataSet([
     { id: 14, label: "Project 12", },
     { id: 15, label: "Project 13", },
     { id: 16, label: "User 1", },
-]);
+]); */
 
-let edges = new vis.DataSet([
+/* let edges = new vis.DataSet([
     { from: 1, to: 2 },
     { from: 1, to: 3 },
     { from: 1, to: 4 },
@@ -34,11 +34,16 @@ let edges = new vis.DataSet([
     { from: 16, to: 13 },
     { from: 16, to: 14 },
     { from: 1, to: 12 },
-]);
+]); */
+
+let nodes = new vis.DataSet();
+let edges = new vis.DataSet();
 
 let defaultFocusNodeId = 1;
+let networkData = {};
 
 const container = document.getElementById("network");
+const projectListEle = document.getElementById("nodes");
 const url = "https://7ru4yz3cg0.execute-api.us-east-1.amazonaws.com/dev/project/list";
 
 let data = {
@@ -68,7 +73,7 @@ let options = {
     },
     physics: {
         barnesHut: {
-            gravitationalConstant: -30000,
+            gravitationalConstant: -25000,
             springLength: 120,
             avoidOverlap: 1,
         }
@@ -87,7 +92,7 @@ const stableListner = (e) => {
 }
 
 // Setup initial focus
-network.on("stabilized", stableListner);
+//network.on("stabilized", stableListner);
 
 
 //Interaction
@@ -113,10 +118,39 @@ const fitAminate = () => network.fit({
 });
 
 fetch(url)
-    .then(res => res.json())
+    .then(res => {
+        return res.json()
+    })
     .then(data => {
-        console.log(JSON.parse(data));
-        if (data.status === 200) {
-            console.log(JSON.parse(data.body));
-        }
+        let projects = Object.keys(data.project);
+        nodes.add(projects.map(p => {
+            let opt = document.createElement('option');
+            opt.value = p;
+            opt.innerHTML = p;
+            projectListEle.appendChild(opt);
+            return {
+                id: p,
+                label: p
+            }
+        }));
+
+        projects.forEach(name => {
+            data.project[name].forEach(node => {
+                let childEdges = [];
+                if (!nodes.get(node)) {
+                    nodes.add({
+                        id: node,
+                        label: node
+                    });
+                }
+
+                childEdges.push({
+                    to: node,
+                    from: name
+                });
+
+                //nodes.add(childNodes);
+                edges.add(childEdges);
+            });
+        });
     });
