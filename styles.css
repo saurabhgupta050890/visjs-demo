@@ -3,9 +3,9 @@
     height: 700px;
     border: 1px solid lightgray;
     grid-column-start: 1;
-    background: linear-gradient(262deg, #724dda, #ac9ae1);
+    background: linear-gradient(270deg, #724dda, #8c96c8, #8767df, #c5b6ee);
     background-size: 400% 400%;
-    animation: gradientMoving 17s ease infinite;
+    animation: gradientMoving 30s ease infinite;
 }
 
 @keyframes gradientMoving { 
