@@ -40,8 +40,8 @@ let nodes = new vis.DataSet();
 let edges = new vis.DataSet();
 
 let defaultFocusNodeId = 1;
-let networkData = {};
 
+const centralGravityConstantVal = -25000;
 const container = document.getElementById("network");
 const projectListEle = document.getElementById("nodes");
 const url = "https://7ru4yz3cg0.execute-api.us-east-1.amazonaws.com/dev/project/list";
@@ -70,6 +70,10 @@ let options = {
         smooth: {
             enabled: false,
         },
+        color: {
+            color: "#FFF",
+            inherit: false,
+        },
     },
     physics: {
         barnesHut: {
@@ -87,12 +91,19 @@ let options = {
 let network = new vis.Network(container, data, options);
 
 const stableListner = (e) => {
-    focusOnNode(defaultFocusNodeId);
-    network.removeEventListener("stabilized", stableListner);
+    console.log("satble");
+    //focusOnNode(defaultFocusNodeId);
+    /* if (options.physics.barnesHut.gravitationalConstant < centralGravityConstantVal) {
+        options.physics.barnesHut.gravitationalConstant += 5000;
+    } else {
+        options.physics.barnesHut.gravitationalConstant -= 5000;
+    } */
+    //network.setOptions(options);
+    //network.removeEventListener("stabilized", stableListner);
 }
 
 // Setup initial focus
-//network.on("stabilized", stableListner);
+network.on("stabilized", stableListner);
 
 
 //Interaction
@@ -107,7 +118,8 @@ const focusOnNode = (nodeId = 1, scale = 1.6) => {
             easingFunction: 'easeInOutQuad',
         },
     };
-    network.focus(nodeId, options);
+
+    !!nodeId ? network.focus(nodeId, options) : fitAminate();
 }
 
 const fitAminate = () => network.fit({
@@ -122,16 +134,33 @@ fetch(url)
         return res.json()
     })
     .then(data => {
+        data.nodes.forEach(node => {
+            Object.assign(node, data.category[node.category]);
+        });
         nodes.add(data.nodes);
         edges.add(data.edges);
-        loadFocusOptions(data.nodes);
+        loadFocusOptions(data);
     });
 
-const loadFocusOptions = (nodes) => {
-    nodes.forEach(node => {
+const loadFocusOptions = (data) => {
+    let optionGrps = {};
+
+    for (let c in data.category) {
+        let optGrp = document.createElement('optgroup');
+        optGrp.label = c;
+        optionGrps[c] = optGrp;
+    }
+
+    data.nodes.forEach(node => {
         let option = document.createElement('option');
         option.innerHTML = node.label;
         option.value = node.id;
-        projectListEle.appendChild(option);
-    })
+        if (optionGrps[node.category]) {
+            optionGrps[node.category].appendChild(option);
+        }
+    });
+
+    for (let grp in optionGrps) {
+        projectListEle.appendChild(optionGrps[grp]);
+    }
 }
