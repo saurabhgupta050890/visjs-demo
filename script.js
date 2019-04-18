@@ -122,35 +122,16 @@ fetch(url)
         return res.json()
     })
     .then(data => {
-        let projects = Object.keys(data.project);
-        nodes.add(projects.map(p => {
-            let opt = document.createElement('option');
-            opt.value = p;
-            opt.innerHTML = p;
-            projectListEle.appendChild(opt);
-            return {
-                id: p,
-                label: p
-            }
-        }));
-
-        projects.forEach(name => {
-            data.project[name].forEach(node => {
-                let childEdges = [];
-                if (!nodes.get(node)) {
-                    nodes.add({
-                        id: node,
-                        label: node
-                    });
-                }
-
-                childEdges.push({
-                    to: node,
-                    from: name
-                });
-
-                //nodes.add(childNodes);
-                edges.add(childEdges);
-            });
-        });
+        nodes.add(data.nodes);
+        edges.add(data.edges);
+        loadFocusOptions(data.nodes);
     });
+
+const loadFocusOptions = (nodes) => {
+    nodes.forEach(node => {
+        let option = document.createElement('option');
+        option.innerHTML = node.label;
+        option.value = node.id;
+        projectListEle.appendChild(option);
+    })
+}
