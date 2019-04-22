@@ -76,7 +76,7 @@ let options = {
     },
     physics: {
         barnesHut: {
-            gravitationalConstant: -3000,
+            gravitationalConstant: -5000,
             springLength: 120,
             avoidOverlap: 1,
         }
@@ -140,7 +140,7 @@ const loadFocusOptions = (data) => {
 
     for (let c in data.category) {
         let optGrp = document.createElement('optgroup');
-        optGrp.label = c;
+        optGrp.label = c.charAt(0).toUpperCase() + c.slice(1);
         optionGrps[c] = optGrp;
     }
 
