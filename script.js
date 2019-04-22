@@ -103,7 +103,7 @@ const stableListner = (e) => {
 
 const changeNodeFocus = e => focusOnNode(e.currentTarget.value);
 
-const focusOnNode = (nodeId = 1, scale = 1.6) => {
+const focusOnNode = (nodeId = 1, scale = 1) => {
     let options = {
         scale: scale,
         animation: {
