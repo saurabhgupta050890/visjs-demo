@@ -41,7 +41,6 @@ let edges = new vis.DataSet();
 
 let defaultFocusNodeId = 1;
 
-const centralGravityConstantVal = -25000;
 const container = document.getElementById("network");
 const projectListEle = document.getElementById("nodes");
 const url = "https://7ru4yz3cg0.execute-api.us-east-1.amazonaws.com/dev/project/list";
@@ -77,7 +76,7 @@ let options = {
     },
     physics: {
         barnesHut: {
-            gravitationalConstant: -25000,
+            gravitationalConstant: -10000,
             springLength: 120,
             avoidOverlap: 1,
         }
@@ -91,19 +90,13 @@ let options = {
 let network = new vis.Network(container, data, options);
 
 const stableListner = (e) => {
-    console.log("satble");
-    //focusOnNode(defaultFocusNodeId);
-    /* if (options.physics.barnesHut.gravitationalConstant < centralGravityConstantVal) {
-        options.physics.barnesHut.gravitationalConstant += 5000;
-    } else {
-        options.physics.barnesHut.gravitationalConstant -= 5000;
-    } */
-    //network.setOptions(options);
-    //network.removeEventListener("stabilized", stableListner);
+    let node = getRamdonNode();
+    let pos = network.getPositions(node.id);
+    setTimeout(() => network.moveNode(node.id, pos[node.id].x + 20, pos[node.id].y + 20), 50);
 }
 
 // Setup initial focus
-network.on("stabilized", stableListner);
+//network.on("stabilized", stableListner);
 
 
 //Interaction
@@ -163,4 +156,9 @@ const loadFocusOptions = (data) => {
     for (let grp in optionGrps) {
         projectListEle.appendChild(optionGrps[grp]);
     }
+}
+
+const getRamdonNode = () => {
+    let nodeIds = nodes.getIds();
+    return nodes.get(nodeIds[Math.floor(Math.random() * nodeIds.length)]);
 }
