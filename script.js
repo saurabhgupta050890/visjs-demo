@@ -44,6 +44,7 @@ let defaultFocusNodeId = 1;
 const container = document.getElementById("network");
 const projectListEle = document.getElementById("nodes");
 const url = "https://7ru4yz3cg0.execute-api.us-east-1.amazonaws.com/dev/project/list";
+const url2 = "https://7ru4yz3cg0.execute-api.us-east-1.amazonaws.com/dev/project/list-test";
 
 let data = {
     nodes: nodes,
@@ -52,18 +53,16 @@ let data = {
 
 let options = {
     nodes: {
-        shape: "box",
+        shape: "circle",
         margin: 10,
         color: {
             border: "#FFF",
             background: "#724DDA",
         },
-        font: {
-            color: "#FFF",
-        },
         shadow: {
             color: "#FFF",
         },
+        size: 10,
     },
     edges: {
         smooth: {
@@ -122,27 +121,35 @@ const fitAminate = () => network.fit({
     },
 });
 
-fetch(url)
+fetch(url2)
     .then(res => {
-        return res.json()
+        return res.json();
     })
     .then(data => {
+        let counter = 0;
         data.nodes.forEach(node => {
+            node.id = counter;
+            counter++;
             Object.assign(node, data.category[node.category]);
+            if (node.nodeWeight > 1) {
+                node.font.size = (node.nodeWeight * 14) / 2;
+                node.font.bold = true;
+            }
+            nodes.add(node);
+            node.projects.forEach(project => {
+                project.id = counter;
+                project.label = project.label.split(" ").join("\n");
+                counter++;
+                Object.assign(project, data.category[project.category]);
+                nodes.add(project);
+                edges.add({ to: node.id, from: project.id });
+            });
         });
-        nodes.add(data.nodes);
-        edges.add(data.edges);
         loadFocusOptions(data);
     });
 
 const loadFocusOptions = (data) => {
     let optionGrps = {};
-
-    for (let c in data.category) {
-        let optGrp = document.createElement('optgroup');
-        optGrp.label = c.charAt(0).toUpperCase() + c.slice(1);
-        optionGrps[c] = optGrp;
-    }
 
     data.nodes.forEach(node => {
         let option = document.createElement('option');
@@ -150,6 +157,10 @@ const loadFocusOptions = (data) => {
         option.value = node.id;
         if (optionGrps[node.category]) {
             optionGrps[node.category].appendChild(option);
+        } else {
+            let optGrp = document.createElement('optgroup');
+            optGrp.label = node.category.charAt(0).toUpperCase() + node.category.slice(1);
+            optionGrps[node.category] = optGrp;
         }
     });
 
